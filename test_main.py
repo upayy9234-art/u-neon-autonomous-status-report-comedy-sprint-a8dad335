@@ -55,6 +55,25 @@ class TestCandidates(unittest.TestCase):
         second = entry.pick_winner()
         self.assertEqual(first, second)
 
+    def test_pick_winner_tie_break_shorter_then_earliest(self):
+        scores = {"surprise": 5, "truth": 5, "economy": 5,
+                  "freshness": 5, "agent_true": 5}
+        # Same score: the shorter line must win over the longer one.
+        shorter = {"text": "Short line.", "scores": dict(scores)}
+        longer = {"text": "A much longer status line here.",
+                  "scores": dict(scores)}
+        text, _ = entry.pick_winner([longer, shorter])
+        self.assertEqual(text, shorter["text"])
+        # Same score and same length: the earliest candidate must win.
+        first = {"text": "First line wins.", "scores": dict(scores)}
+        second = {"text": "Other line wins.", "scores": dict(scores)}
+        self.assertEqual(len(first["text"]), len(second["text"]))
+        text, _ = entry.pick_winner([first, second])
+        self.assertEqual(text, first["text"])
+        # And the same pair in reverse order must pick the new earliest.
+        text, _ = entry.pick_winner([second, first])
+        self.assertEqual(text, second["text"])
+
 
 class TestProgramRun(unittest.TestCase):
     def _run_main(self, env_extra):

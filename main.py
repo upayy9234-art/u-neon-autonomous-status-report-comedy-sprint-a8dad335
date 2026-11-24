@@ -115,10 +115,10 @@ def pick_winner(candidates=CANDIDATES):
     the choice is fully deterministic.
     """
     ranked = sorted(
-        candidates,
-        key=lambda c: (-score(c), len(c["text"]), candidates.index(c)),
+        enumerate(candidates),
+        key=lambda t: (-score(t[1]), len(t[1]["text"]), t[0]),
     )
-    best = ranked[0]
+    best = ranked[0][1]
     return best["text"], score(best)
 
 
